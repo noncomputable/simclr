@@ -38,3 +38,25 @@ class AugmentedDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.get_image(idx, True)
+
+def get_normalized_dataset(dataset_class):
+    class NormalizedDataset(Dataset):
+        def __init__(self, *args, **kwargs):
+            super().__init__()
+
+            self.dataset = dataset_class(*args, **kwargs)            
+            self.normalize = transforms.Compose([
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+            ])
+
+        def __len__(self):
+            return len(self.dataset)
+
+        def __getitem__(self, idx):
+            img, cls = self.dataset[idx]
+            normalized_img = self.normalize(img)
+
+            return normalized_img, cls
+
+    return NormalizedDataset
