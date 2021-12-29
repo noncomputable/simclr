@@ -15,3 +15,22 @@ class Embeddor(nn.Module):
         base_embed = self.base_model(image)
         embed = self.projector(base_embed)
         return embed
+
+class Classifier(nn.Module):
+    def __init__(self, embeddor, freeze_base, n_classes):
+        super().__init__()
+        
+        self.embeddor = embeddor.base_model
+        
+        if freeze_base:
+            for param in self.embeddor.parameters():
+                param.requires_grad = False
+
+        self.classifier = nn.Linear(in_features=embeddor.projector[0].in_features,
+                                    out_features=n_classes)
+
+    def forward(self, image):
+        emb = self.embeddor(image)
+        class_ = self.classifier(emb)
+        
+        return class_
