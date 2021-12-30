@@ -10,6 +10,7 @@ __pycache__/
 
 # data
 data/
+checkpoints/
 
 # pl
 lightning_logs/
